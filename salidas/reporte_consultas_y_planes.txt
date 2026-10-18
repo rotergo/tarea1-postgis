@@ -1,0 +1,377 @@
+
+==============================================================================
+PREGUNTA 1: Paraderos GTFS por comuna y densidad (paraderos/km2)
+==============================================================================
+comuna        | paraderos_gtfs | area_comuna_km2 | densidad_paraderos_km2 
+---------------------+----------------+-----------------+------------------------
+ Lo Prado            |            219 |            6.54 |                  33.47
+ Santiago            |            697 |           23.18 |                  30.07
+ Conchalí            |            323 |           10.94 |                  29.53
+ San Joaquín         |            250 |            9.94 |                  25.16
+ Quinta Normal       |            292 |           11.80 |                  24.74
+ Ñuñoa               |            411 |           16.89 |                  24.33
+ Estación Central    |            342 |           14.37 |                  23.79
+ Recoleta            |            360 |           15.61 |                  23.06
+ Macul               |            294 |           12.81 |                  22.95
+ Pedro Aguirre Cerda |            196 |            8.73 |                  22.45
+ San Miguel          |            214 |            9.63 |                  22.23
+ Providencia         |            316 |           14.44 |                  21.88
+ Independencia       |            160 |            7.35 |                  21.76
+ Cerrillos           |            282 |           16.82 |                  16.77
+ Cerro Navia         |            163 |           11.05 |                  14.75
+ Lo Espejo           |            120 |            8.25 |                  14.54
+ La Reina            |            279 |           23.39 |                  11.93
+ Renca               |            239 |           23.68 |                  10.09
+ Peñalolén           |            452 |           53.89 |                   8.39
+ Vitacura            |            194 |           28.59 |                   6.79
+ La Cisterna         |             43 |           10.01 |                   4.30
+ Las Condes          |            411 |           99.06 |                   4.15
+ Huechuraba          |            165 |           44.98 |                   3.67
+ Quilicura           |            196 |           57.32 |                   3.42
+ La Granja           |             27 |           10.05 |                   2.69
+ La Florida          |            179 |           71.04 |                   2.52
+ Maipú               |            218 |          136.80 |                   1.59
+ San Ramón           |              6 |            6.31 |                   0.95
+ Pudahuel            |            109 |          198.57 |                   0.55
+ Lo Barnechea        |              5 |         1023.61 |                   0.00
+(30 rows)
+
+==============================================================================
+PREGUNTA 2: Cobertura a 500 m (GTFS vs OSM por comuna)
+==============================================================================
+comuna        | total_edificios | edif_sin_gtfs_500m | pct_sin_gtfs | edif_sin_osm_500m | pct_sin_osm 
+---------------------+-----------------+--------------------+--------------+-------------------+-------------
+ Santiago            |           19717 |                  0 |         0.00 |                 0 |        0.00
+ Ñuñoa               |           12790 |                  0 |         0.00 |                 0 |        0.00
+ Providencia         |           12133 |                 88 |         0.73 |                18 |        0.15
+ La Reina            |           11878 |                209 |         1.76 |               148 |        1.25
+ Las Condes          |           10841 |                281 |         2.59 |               269 |        2.48
+ Maipú               |            9793 |                 22 |         0.22 |                22 |        0.22
+ Macul               |            5231 |                  0 |         0.00 |                 0 |        0.00
+ Vitacura            |            4014 |                159 |         3.96 |               158 |        3.94
+ Cerrillos           |            3948 |                  3 |         0.08 |                 3 |        0.08
+ Peñalolén           |            3466 |                102 |         2.94 |                88 |        2.54
+ Recoleta            |            3086 |                 58 |         1.88 |                30 |        0.97
+ Renca               |            2851 |                  4 |         0.14 |                 4 |        0.14
+ San Joaquín         |            2649 |                  0 |         0.00 |                 0 |        0.00
+ Estación Central    |            2470 |                  1 |         0.04 |                 1 |        0.04
+ Quilicura           |            2291 |                171 |         7.46 |               173 |        7.55
+ San Miguel          |            1755 |                  0 |         0.00 |                 0 |        0.00
+ Independencia       |            1375 |                 23 |         1.67 |                20 |        1.45
+ Conchalí            |            1341 |                  0 |         0.00 |                 0 |        0.00
+ Huechuraba          |            1268 |                136 |        10.73 |               132 |       10.41
+ Pedro Aguirre Cerda |            1155 |                  0 |         0.00 |                 0 |        0.00
+ Quinta Normal       |            1068 |                  0 |         0.00 |                 0 |        0.00
+ La Florida          |             953 |                 43 |         4.51 |                43 |        4.51
+ Lo Prado            |             915 |                  0 |         0.00 |                 0 |        0.00
+ Pudahuel            |             664 |                  0 |         0.00 |                 0 |        0.00
+ Cerro Navia         |             458 |                  0 |         0.00 |                 0 |        0.00
+ La Cisterna         |             412 |                  0 |         0.00 |                 0 |        0.00
+ Lo Espejo           |             215 |                  0 |         0.00 |                 0 |        0.00
+ La Granja           |             150 |                  0 |         0.00 |                 0 |        0.00
+ Lo Barnechea        |              76 |                 47 |        61.84 |                47 |       61.84
+ San Ramón           |              10 |                  0 |         0.00 |                 0 |        0.00
+(30 rows)
+
+==============================================================================
+PLAN DE EJECUCIÓN #1 — Pregunta 2 (Anti-join cobertura 500 m)
+==============================================================================
+QUERY PLAN                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=36628.25..4607719.97 rows=52 width=25) (actual time=478.602..1444.099 rows=30 loops=1)
+   Group Key: c.comuna
+   ->  Sort  (cost=36628.25..37177.66 rows=219764 width=41) (actual time=447.955..470.736 rows=118973 loops=1)
+         Sort Key: c.comuna
+         Sort Method: external merge  Disk: 5688kB
+         ->  Nested Loop  (cost=0.28..10367.03 rows=219764 width=41) (actual time=239.784..424.522 rows=118973 loops=1)
+               ->  Seq Scan on comunas_cl c  (cost=0.00..23.31 rows=52 width=316880) (actual time=239.536..239.698 rows=52 loops=1)
+                     Filter: ((cut_reg)::text = '13'::text)
+                     Rows Removed by Filter: 293
+               ->  Index Scan using idx_edificios_punto on edificios e  (cost=0.28..198.80 rows=12 width=32) (actual time=0.157..3.419 rows=2288 loops=52)
+                     Index Cond: (punto @ c.geom)
+                     Filter: st_contains(c.geom, punto)
+                     Rows Removed by Filter: 3064
+   SubPlan 1
+     ->  Index Scan using idx_paraderos_gtfs_geom on paraderos_gtfs p  (cost=0.27..20.79 rows=1 width=0) (actual time=0.008..0.008 rows=1 loops=118973)
+           Index Cond: (geom && st_expand(e.punto, '500'::double precision))
+           Filter: st_dwithin(e.punto, geom, '500'::double precision)
+           Rows Removed by Filter: 1
+ Planning Time: 8.562 ms
+ JIT:
+   Functions: 23
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 1.045 ms, Inlining 54.129 ms, Optimization 113.499 ms, Emission 71.979 ms, Total 240.651 ms
+ Execution Time: 1461.399 ms
+(24 rows)
+
+==============================================================================
+PREGUNTA 3: Dos fuentes, un objeto (Anti-join a 50 m en ambos sentidos)
+==============================================================================
+total_gtfs | gtfs_sin_osm_50m | pct_gtfs_sin_osm | total_osm | osm_sin_gtfs_50m | pct_osm_sin_gtfs 
+------------+------------------+------------------+-----------+------------------+------------------
+       7162 |              559 |             7.81 |      6572 |              359 |             5.46
+(1 row)
+
+==============================================================================
+PREGUNTA 4: Kilómetros de recorrido por comuna (Resultado)
+==============================================================================
+comuna        | km_recorridos 
+---------------------+---------------
+ Santiago            |       1339.99
+ Maipú               |       1300.25
+ La Florida          |        840.46
+ Pudahuel            |        798.48
+ Las Condes          |        767.66
+ Quilicura           |        753.82
+ Peñalolén           |        662.34
+ Ñuñoa               |        600.63
+ Estación Central    |        590.81
+ Providencia         |        495.74
+ Puente Alto         |        472.89
+ Renca               |        440.12
+ La Reina            |        407.68
+ Cerrillos           |        357.14
+ Vitacura            |        356.58
+ Macul               |        335.17
+ Huechuraba          |        330.96
+ Quinta Normal       |        322.51
+ Conchalí            |        304.25
+ Cerro Navia         |        292.14
+ Lo Espejo           |        285.07
+ Recoleta            |        277.29
+ San Miguel          |        264.05
+ Lo Prado            |        260.40
+ La Cisterna         |        250.93
+ La Pintana          |        229.32
+ Pedro Aguirre Cerda |        229.05
+ San Joaquín         |        214.64
+ Independencia       |        204.23
+ Lo Barnechea        |        185.75
+ La Granja           |        185.40
+ San Bernardo        |        185.18
+ San Ramón           |        155.24
+ El Bosque           |         93.22
+ Paine               |         32.72
+ Lampa               |         21.61
+ Buin                |         19.85
+ Colina              |          6.25
+(38 rows)
+
+==============================================================================
+PLAN DE EJECUCIÓN #2A — Pregunta 4 SIN ST_Subdivide (comunas_cl)
+==============================================================================
+QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=362728.70..362728.83 rows=52 width=41) (actual time=524.613..524.617 rows=38 loops=1)
+   Sort Key: (round(((sum(st_length(st_intersection(r.geom, c.geom, '-1'::double precision))) / '1000'::double precision))::numeric, 2)) DESC
+   Sort Method: quicksort  Memory: 26kB
+   ->  GroupAggregate  (cost=346986.22..362727.22 rows=52 width=41) (actual time=124.653..524.502 rows=38 loops=1)
+         Group Key: c.comuna
+         ->  Sort  (cost=346986.22..346989.33 rows=1246 width=324964) (actual time=124.282..131.092 rows=3541 loops=1)
+               Sort Key: c.comuna
+               Sort Method: external merge  Disk: 17976kB
+               ->  Nested Loop  (cost=0.14..898.15 rows=1246 width=324964) (actual time=8.253..104.553 rows=3541 loops=1)
+                     ->  Seq Scan on comunas_cl c  (cost=0.00..23.31 rows=52 width=316880) (actual time=7.551..7.790 rows=52 loops=1)
+                           Filter: ((cut_reg)::text = '13'::text)
+                           Rows Removed by Filter: 293
+                     ->  Index Scan using idx_recorridos_geom on recorridos r  (cost=0.14..16.81 rows=1 width=8084) (actual time=0.218..1.835 rows=68 loops=52)
+                           Index Cond: (geom && c.geom)
+                           Filter: st_intersects(geom, c.geom)
+                           Rows Removed by Filter: 86
+ Planning Time: 8.761 ms
+ JIT:
+   Functions: 15
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 0.672 ms, Inlining 0.000 ms, Optimization 0.365 ms, Emission 7.213 ms, Total 8.250 ms
+ Execution Time: 539.679 ms
+(22 rows)
+
+==============================================================================
+PLAN DE EJECUCIÓN #2B — Pregunta 4 CON ST_Subdivide (comunas_sub)
+==============================================================================
+QUERY PLAN                                                                                 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=24134.73..24135.17 rows=175 width=41) (actual time=366.995..367.071 rows=38 loops=1)
+   Sort Key: (round(((sum(st_length(st_intersection(r.geom, c.geom, '-1'::double precision))) / '1000'::double precision))::numeric, 2)) DESC
+   Sort Method: quicksort  Memory: 26kB
+   ->  Finalize GroupAggregate  (cost=23184.66..24128.21 rows=175 width=41) (actual time=256.336..366.931 rows=38 loops=1)
+         Group Key: c.comuna
+         ->  Gather Merge  (cost=23184.66..24124.42 rows=146 width=17) (actual time=256.297..366.744 rows=38 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               ->  Partial GroupAggregate  (cost=22184.64..23107.54 rows=73 width=17) (actual time=90.285..225.408 rows=13 loops=3)
+                     Group Key: c.comuna
+                     ->  Sort  (cost=22184.64..22184.82 rows=73 width=9001) (actual time=85.576..88.224 rows=2123 loops=3)
+                           Sort Key: c.comuna
+                           Sort Method: external merge  Disk: 7184kB
+                           Worker 0:  Sort Method: external merge  Disk: 7856kB
+                           Worker 1:  Sort Method: external merge  Disk: 8368kB
+                           ->  Nested Loop  (cost=0.14..22182.38 rows=73 width=9001) (actual time=1.513..76.156 rows=2123 loops=3)
+                                 ->  Parallel Seq Scan on comunas_sub c  (cost=0.00..17710.76 rows=308 width=917) (actual time=1.066..13.876 rows=224 loops=3)
+                                       Filter: ((cut_reg)::text = '13'::text)
+                                       Rows Removed by Filter: 43729
+                                 ->  Index Scan using idx_recorridos_geom on recorridos r  (cost=0.14..14.51 rows=1 width=8084) (actual time=0.033..0.277 rows=9 loops=671)
+                                       Index Cond: (geom && c.geom)
+                                       Filter: st_intersects(geom, c.geom)
+                                       Rows Removed by Filter: 14
+ Planning Time: 8.716 ms
+ Execution Time: 368.439 ms
+(25 rows)
+
+==============================================================================
+PREGUNTA 5 (Resumen Top 15 más lejanos y estadísticos — Recorrido 210)
+==============================================================================
+stop_code |                      paradero                      |        establecimiento_salud        | tipo_amenidad | distancia_m 
+-----------+----------------------------------------------------+-------------------------------------+---------------+-------------
+           | PD203-Parada 2 / Paradero 1 Av.Vicuña Mackenna     | Farmacia Amaya                      | pharmacy      |       761.6
+           | PH207-Parada 1 / Paradero 1 Av.Vicuña Mackenna     | (Sin nombre en OSM)                 | pharmacy      |       657.9
+           | PH216-Av. Vicuña Mackenna / esq. Llico             | Cruz Verde                          | pharmacy      |       528.2
+           | PD194-Av. Vicuña Mackenna / esq. Estadio Colo Colo | Cruz Verde                          | pharmacy      |       505.4
+           | PD195-Parada / Paradero 7 Av.Vicuña Mackenna       | Cruz Verde                          | pharmacy      |       455.4
+           | PD1612-Parada 1 / (M) Carlos Valdovinos            | CESFAM/ SAPU San Joaquín            | clinic        |       455.1
+           | PD200-Parada 3 / (M) Carlos Valdovinos             | CESFAM/ SAPU San Joaquín            | clinic        |       449.6
+           | PD1608-Parada 2 / Paradero 2 Av.Vicuña Mackenna    | Farmacia Amaya                      | pharmacy      |       431.1
+           | PH208-Parada 1 / Paradero 2 Av.Vicuña Mackenna     | Farmacia Amaya                      | pharmacy      |       423.5
+           | PH215-Parada / Paradero 7 Av.Vicuña Mackenna       | Cruz Verde                          | pharmacy      |       413.2
+           | PI909-Concón / esq. Manuel Thompson                | Farmacias del Dr. Simi              | pharmacy      |       381.0
+           | PD201-Av. Vicuña Mackenna / esq. Domingo Arteaga   | Farmacia Amaya                      | pharmacy      |       372.0
+           | PI1793-General Amengual / esq. Guernica            | Instituto de Rehabilitación Teletón | doctors       |       359.9
+           | PI910-Parada 6 / Concón                            | Farmacias del Dr. Simi              | pharmacy      |       331.8
+           | PA823-Av. Vicuña Mackenna / esq. Victoria          | Movimed                             | pharmacy      |       320.9
+(15 rows)
+
+==============================================================================
+PREGUNTA 5 (Estadísticos globales de distancia en Recorrido 210)
+==============================================================================
+paraderos_ruta_210 | min_m | media_m | mediana_m | max_m 
+--------------------+-------+---------+-----------+-------
+                 74 |   5.3 |   184.9 |     118.7 | 761.6
+(1 row)
+
+==============================================================================
+PLAN DE EJECUCIÓN #3 — Pregunta 5 (KNN con CROSS JOIN LATERAL + <->)
+==============================================================================
+QUERY PLAN                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=40216.74..40220.42 rows=1472 width=120) (actual time=66.854..67.075 rows=74 loops=1)
+   Sort Key: (round((st_distance(p.geom, a.geom))::numeric, 1)) DESC
+   Sort Method: quicksort  Memory: 32kB
+   ->  Nested Loop  (cost=18074.61..40139.29 rows=1472 width=120) (actual time=60.432..67.002 rows=74 loops=1)
+         ->  Unique  (cost=18074.33..18268.16 rows=1472 width=85) (actual time=60.157..60.823 rows=74 loops=1)
+               ->  Gather Merge  (cost=18074.33..18253.44 rows=1472 width=85) (actual time=60.157..60.776 rows=222 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     ->  Unique  (cost=17074.31..17083.51 rows=736 width=85) (actual time=53.383..53.633 rows=74 loops=3)
+                           ->  Sort  (cost=17074.31..17076.15 rows=736 width=85) (actual time=53.382..53.493 rows=715 loops=3)
+                                 Sort Key: p.stop_id, p.stop_code, p.stop_name, p.geom
+                                 Sort Method: quicksort  Memory: 101kB
+                                 Worker 0:  Sort Method: quicksort  Memory: 81kB
+                                 Worker 1:  Sort Method: quicksort  Memory: 105kB
+                                 ->  Hash Join  (cost=923.57..17039.26 rows=736 width=85) (actual time=8.218..52.916 rows=715 loops=3)
+                                       Hash Cond: (st.stop_id = p.stop_id)
+                                       ->  Hash Join  (cost=666.42..16770.75 rows=1070 width=6) (actual time=7.070..51.605 rows=1286 loops=3)
+                                             Hash Cond: (st.trip_id = t.trip_id)
+                                             ->  Parallel Seq Scan on gtfs_stop_times_raw st  (cost=0.00..14377.20 rows=457720 width=20) (actual time=0.026..22.671 rows=366176 loops=3)
+                                             ->  Hash  (cost=665.66..665.66 rows=61 width=16) (actual time=2.826..2.870 rows=58 loops=3)
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                                                   ->  Hash Join  (cost=11.36..665.66 rows=61 width=16) (actual time=0.220..2.862 rows=58 loops=3)
+                                                         Hash Cond: (t.route_id = r.route_id)
+                                                         ->  Seq Scan on gtfs_trips_raw t  (cost=0.00..555.59 rows=26159 width=19) (actual time=0.008..1.250 rows=26159 loops=3)
+                                                         ->  Hash  (cost=11.35..11.35 rows=1 width=4) (actual time=0.036..0.037 rows=1 loops=3)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                               ->  Seq Scan on gtfs_routes_raw r  (cost=0.00..11.35 rows=1 width=4) (actual time=0.010..0.034 rows=1 loops=3)
+                                                                     Filter: (route_short_name = '210'::text)
+                                                                     Rows Removed by Filter: 427
+                                       ->  Hash  (cost=167.62..167.62 rows=7162 width=85) (actual time=1.116..1.117 rows=7162 loops=3)
+                                             Buckets: 8192  Batches: 1  Memory Usage: 821kB
+                                             ->  Seq Scan on paraderos_gtfs p  (cost=0.00..167.62 rows=7162 width=85) (actual time=0.008..0.337 rows=7162 loops=3)
+         ->  Limit  (cost=0.28..2.32 rows=1 width=68) (actual time=0.082..0.082 rows=1 loops=74)
+               ->  Index Scan using idx_amenidades_geom on amenidades a  (cost=0.28..2779.55 rows=1357 width=68) (actual time=0.080..0.080 rows=1 loops=74)
+                     Order By: (geom <-> p.geom)
+                     Filter: (amenity = ANY ('{pharmacy,hospital,clinic,doctors}'::text[]))
+                     Rows Removed by Filter: 32
+ Planning Time: 0.790 ms
+ Execution Time: 74.403 ms
+(39 rows)
+
+==============================================================================
+PREGUNTA 6: Resumen general de la Grilla Hexagonal (500 m)
+==============================================================================
+total_hexagonos_con_edificios | suma_edificios | max_edificios_celda | max_recorridos_celda | celdas_sin_recorridos 
+-------------------------------+----------------+---------------------+----------------------+-----------------------
+                           603 |         118973 |                2511 |                   77 |                    34
+(1 row)
+
+==============================================================================
+PREGUNTA 6A: Top 10 celdas (>=100 edificios) con MENOS recorridos y MÁS edificios
+==============================================================================
+i  |  j   |   comuna    | edificios | m2_construidos | recorridos_distintos | indice_presion 
+-----+------+-------------+-----------+----------------+----------------------+----------------
+ 472 | 7275 | Las Condes  |       755 |         103955 |                    0 |          755.0
+ 469 | 7274 | Providencia |       456 |         148238 |                    1 |          228.0
+ 450 | 7279 | Renca       |       265 |          20653 |                    1 |          132.5
+ 478 | 7273 | La Reina    |       217 |          30745 |                    1 |          108.5
+ 478 | 7274 | La Reina    |       211 |          23722 |                    1 |          105.5
+ 476 | 7266 | Peñalolén   |       147 |          16528 |                    1 |           73.5
+ 478 | 7272 | La Reina    |       138 |          22129 |                    1 |           69.0
+ 478 | 7264 | La Florida  |       113 |          10743 |                    1 |           56.5
+ 470 | 7272 | Ñuñoa       |       765 |         137873 |                    2 |          255.0
+ 472 | 7267 | Peñalolén   |       702 |          83854 |                    2 |          234.0
+(10 rows)
+
+==============================================================================
+PREGUNTA 6B: Top 10 celdas con mayor razón Edificios / (Recorridos + 1)
+==============================================================================
+i  |  j   |   comuna    | edificios | m2_construidos | recorridos_distintos | indice_presion 
+-----+------+-------------+-----------+----------------+----------------------+----------------
+ 472 | 7275 | Las Condes  |       755 |         103955 |                    0 |          755.0
+ 470 | 7273 | Ñuñoa       |      1344 |         170684 |                    3 |          336.0
+ 471 | 7272 | Ñuñoa       |      1321 |         183103 |                    3 |          330.3
+ 450 | 7269 | Maipú       |      2511 |         131226 |                    7 |          313.9
+ 464 | 7270 | Santiago    |      2450 |         341491 |                    7 |          306.3
+ 469 | 7273 | Providencia |      1028 |         157324 |                    3 |          257.0
+ 470 | 7272 | Ñuñoa       |       765 |         137873 |                    2 |          255.0
+ 472 | 7267 | Peñalolén   |       702 |          83854 |                    2 |          234.0
+ 469 | 7274 | Providencia |       456 |         148238 |                    1 |          228.0
+ 473 | 7273 | La Reina    |       894 |         114213 |                    3 |          223.5
+(10 rows)
+
+==============================================================================
+PREGUNTA 7 (Propia): Frecuencia real GTFS (stop_times) vs Jerarquía Vial y Refugios OSM
+==============================================================================
+tipo_via_osm  | paraderos_gtfs | total_detenciones_programadas | promedio_detenciones_paradero | promedio_rutas_paradero | con_refugio_osm | pct_con_refugio_osm 
+---------------+----------------+-------------------------------+-------------------------------+-------------------------+-----------------+---------------------
+ footway       |           1772 |                        183046 |                         103.3 |                     3.3 |             818 |                46.2
+ primary       |            948 |                        144584 |                         152.5 |                     4.6 |             568 |                59.9
+ secondary     |           1542 |                        139163 |                          90.2 |                     3.4 |             546 |                35.4
+ tertiary      |           1676 |                         93590 |                          55.8 |                     2.5 |             539 |                32.2
+ busway        |            190 |                         27503 |                         144.8 |                     5.3 |             147 |                77.4
+ residential   |            476 |                         22390 |                          47.0 |                     1.7 |             131 |                27.5
+ cycleway      |            146 |                         22200 |                         152.1 |                     3.2 |              66 |                45.2
+ service       |            124 |                         15229 |                         122.8 |                     3.7 |              54 |                43.5
+ steps         |             71 |                         12003 |                         169.1 |                     0.5 |              25 |                35.2
+ motorway      |             26 |                          9715 |                         373.7 |                     1.3 |               2 |                 7.7
+ unclassified  |             52 |                          6797 |                         130.7 |                     4.5 |              24 |                46.2
+ platform      |             43 |                          5302 |                         123.3 |                     6.5 |              42 |                97.7
+ living_street |             36 |                          3775 |                         104.9 |                     2.6 |              11 |                30.6
+(13 rows)
+
+==============================================================================
+PARTE D: Auditoría de uso de índices (pg_stat_user_indexes)
+==============================================================================
+tabla      |           indice           | lecturas_idx_scan | tamano_indice 
+----------------+----------------------------+-------------------+---------------
+ amenidades     | idx_amenidades_geom        |               222 | 872 kB
+ calles         | idx_calles_geom            |              7162 | 4192 kB
+ comunas_cl     | comunas_cl_geom_idx        |               860 | 24 kB
+ comunas_cl     | comunas_cl_pkey            |                 1 | 16 kB
+ comunas_sub    | idx_comunas_sub_geom       |                 0 | 5280 kB
+ edificios      | idx_edificios_geom         |                 0 | 4856 kB
+ edificios      | idx_edificios_punto        |               786 | 4816 kB
+ mv_grilla      | idx_mv_grilla_geom         |                 0 | 40 kB
+ paraderos_gtfs | idx_paraderos_gtfs_geom    |            370408 | 288 kB
+ paraderos_gtfs | idx_paraderos_gtfs_stop_id |                 9 | 176 kB
+ paraderos_osm  | idx_paraderos_osm_geom     |            266590 | 264 kB
+ recorridos     | idx_recorridos_geom        |              2076 | 40 kB
+ recorridos     | idx_recorridos_route_short |                 0 | 32 kB
+(13 rows)

@@ -1,0 +1,25 @@
+# Tarea 1 — Infraestructura reproducible con PostGIS + GDAL
+services:
+  db:
+    build: .                        # Construye desde el Dockerfile local (PostGIS 16 + gdal-bin)
+    image: pmd-postgis-gdal
+    container_name: pmd-postgis
+    environment:
+      POSTGRES_PASSWORD: pmd2026
+    ports:
+      - "5434:5432"                 # Puerto del host 5434 -> contenedor 5432
+    volumes:
+      - pmd-pgdata:/var/lib/postgresql/data   # Volumen persistente con nombre
+      - ./datos_fuente:/datos_fuente:ro       # Archivos crudos en modo solo lectura (comunas_cl.sql, GTFS, PBF)
+      - ./datos:/datos                        # GeoPackage recortado de OSM y CSVs temporales para COPY
+      - ./salidas:/salidas                    # Carpeta para exportar resultados con ogr2ogr / pg_dump
+      - ./sql:/sql:ro                         # Scripts SQL montados para ejecutarlos directo con psql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pmd-pgdata:
+    name: pmd-pgdata

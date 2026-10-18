@@ -1,0 +1,41 @@
+# ==============================================================================
+# 1. Datos fuente y archivos intermedios pesados 
+# ==============================================================================
+datos_fuente/*
+!datos_fuente/.gitkeep
+
+datos/*
+!datos/.gitkeep
+
+# Bloqueo explícito por extensión en cualquier carpeta por seguridad
+*.osm.pbf
+*.pbf
+*.zip
+*.dump
+comunas_cl.sql
+osm_*.gpkg
+osm_*.sql
+
+# Prohibir archivos CSV/TXT crudos del GTFS por si se descomprimen fuera de datos/
+stops.txt
+shapes.txt
+routes.txt
+trips.txt
+stop_times.txt
+calendar.txt
+calendar_dates.txt
+agency.txt
+feed_info.txt
+frequencies.txt
+
+# ==============================================================================
+# 2. Entorno Python, Jupyter y Sistema Operativo
+# ==============================================================================
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+.DS_Store
+Thumbs.db
